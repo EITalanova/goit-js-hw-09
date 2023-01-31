@@ -26,11 +26,11 @@ const options = {
       if (this.isActive) {
         return;
       }
-      this.isActive = true;
       const intervalId = setInterval(() => {
         const { days, hours, minutes, seconds } = convertMs(
           selectedDates[0].getTime() - Date.now()
         );
+         this.isActive = true;
 
         if (selectedDates[0].getTime() < Date.now()) {
           clearInterval(intervalId);
@@ -58,7 +58,7 @@ function convertMs(ms) {
   const minutes = Math.floor(((ms % day) % hour) / minute);
   const seconds = Math.floor((((ms % day) % hour) % minute) / second);
 
-  return { days, hours, minutes, seconds };
+  return ({ days, hours, minutes, seconds });
 }
 
 function time({ days, hours, minutes, seconds }) {
