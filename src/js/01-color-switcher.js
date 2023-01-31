@@ -8,20 +8,20 @@ function getRandomHexColor() {
 }
 
 function getColorBody(evt) {
-    body.style.backgroundColor = getRandomHexColor();
+  body.style.backgroundColor = getRandomHexColor();
 }
 
 function changeColor(evt) {
-    interval = setInterval(getColorBody, 1000);
-    startBtn.setAttribute("disabled", "true");
-    stopBtn.removeAttribute("disabled");
-};
+  interval = setInterval(getColorBody, 1000);
+  startBtn.disabled = true;
+  stopBtn.disabled = false;
+}
 
 function stopChangeColor() {
-    clearInterval(interval);
-    startBtn.removeAttribute("disabled");
-    stopBtn.setAttribute("disabled", "true");
-};
+  clearInterval(interval);
+  startBtn.disabled = false;
+  stopBtn.disabled = true;
+}
 
 startBtn.addEventListener('click', changeColor);
 stopBtn.addEventListener('click', stopChangeColor);

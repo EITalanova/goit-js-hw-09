@@ -8,44 +8,46 @@ const daysCount = document.querySelector('span[data-days]');
 const hoursCount = document.querySelector('span[data-hours]');
 const minutesCount = document.querySelector('span[data-minutes]');
 const secondsCount = document.querySelector('span[data-seconds]');
+const timerBox = document.querySelector('.timer');
+const numberBox = document.querySelectorAll('.field');
 
 const options = {
+  isActive: false,
   enableTime: true,
   time_24hr: true,
   defaultDate: new Date(),
   minuteIncrement: 1,
 
   onClose(selectedDates) {
-    const currentTime = Date.now();
-
-    if (selectedDates[0].getTime() <= currentTime) {
+    if (selectedDates[0].getTime() <= Date.now()) {
       Notiflix.Notify.failure('Please choose a date in the future');
-      startBtn.setAttribute('disabled', 'true');
-    } else {
-      startBtn.removeAttribute('disabled');
-
-      const g = () => {
-        const k = setInterval(() => {
-
-          // console.log(selectedDates[0]);
-          // console.log(convertMs(selectedDates[0].getTime() - Date.now()));
-
-          const { days, hours, minutes, seconds } = convertMs(
-            selectedDates[0].getTime() - Date.now()
-          );
-          m({ days, hours, minutes, seconds });
-        }, 1000);
-      };
-
-      startBtn.addEventListener('click', g);
     }
+    const onTimer = () => {
+      if (this.isActive) {
+        return;
+      }
+      this.isActive = true;
+      const intervalId = setInterval(() => {
+        const { days, hours, minutes, seconds } = convertMs(
+          selectedDates[0].getTime() - Date.now()
+        );
+
+        if (selectedDates[0].getTime() < Date.now()) {
+          clearInterval(intervalId);
+          this.isActive = true;
+          return;
+        }
+
+        time({ days, hours, minutes, seconds });
+      }, 1000);
+    };
+    startBtn.addEventListener('click', onTimer);
   },
 };
 
 flatpickr(datetimePicker, options);
 
 function convertMs(ms) {
-  // Number of milliseconds per unit of time
   const second = 1000;
   const minute = second * 60;
   const hour = minute * 60;
@@ -59,13 +61,27 @@ function convertMs(ms) {
   return { days, hours, minutes, seconds };
 }
 
-function m({ days, hours, minutes, seconds }) {
-  daysCount.textContent = `${days}`;
-  hoursCount.textContent = `${hours}`;
-  minutesCount.textContent = `${minutes}`;
-  secondsCount.textContent = `${seconds}`;
+function time({ days, hours, minutes, seconds }) {
+  daysCount.textContent = addLeadingZero(days);
+  hoursCount.textContent = addLeadingZero(hours);
+  minutesCount.textContent = addLeadingZero(minutes);
+  secondsCount.textContent = addLeadingZero(seconds);
 }
 
-// console.log(convertMs(ms)); // {days: 0, hours: 0, minutes: 0, seconds: 2}
-// console.log(convertMs(140000)); // {days: 0, hours: 0, minutes: 2, seconds: 20}
-// console.log(convertMs(24140000)); // {days: 0, hours: 6 minutes: 42, seconds: 20}
+function addLeadingZero(value) {
+  if (String(value).length <= 1) {
+    return String(value).padStart(2, '0');
+  }
+  return `${value}`;
+}
+
+timerBox.style.display = 'flex';
+timerBox.style.marginTop = '30px';
+timerBox.style.gap = '15px';
+timerBox.style.fontSize = '20px';
+
+numberBox.forEach(number => {
+  number.style.display = 'flex';
+  number.style.flexDirection = 'column';
+  number.style.alignItems = 'center';
+});
